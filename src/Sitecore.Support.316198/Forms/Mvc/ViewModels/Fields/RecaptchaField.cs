@@ -118,12 +118,18 @@ namespace Sitecore.Support.Forms.Mvc.ViewModels.Fields
 
       if (this.RobotDetection.Session.Enabled)
       {
-        isSessionSubmitsExceeded = this.RobotDetection.IsSessionThresholdExceeded(formId);
+        // check if the "Value" property is not empty when validation is successfull
+        // the validation logic located in the "RecaptchaResponseValidator" attribute under the "Velue" property.
+        isSessionSubmitsExceeded = string.IsNullOrEmpty(Value) ?
+            this.RobotDetection.IsSessionThresholdExceeded(formId) : false;
       }
 
       if (this.RobotDetection.Server.Enabled)
       {
-        isApplicationOverallSubmitsExceeded = this.RobotDetection.IsServerThresholdExceeded(formId);
+        // check if the "Value" property is not empty when validation is successfull
+        // the validation logic located in the "RecaptchaResponseValidator" attribute under the "Velue" property.
+        isApplicationOverallSubmitsExceeded = string.IsNullOrEmpty(Value) ?
+            this.RobotDetection.IsServerThresholdExceeded(formId) : false;
       }
 
       if (isRobot || isSessionSubmitsExceeded || isApplicationOverallSubmitsExceeded)

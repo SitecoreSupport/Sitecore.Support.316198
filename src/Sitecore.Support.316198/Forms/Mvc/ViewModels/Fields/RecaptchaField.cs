@@ -17,80 +17,10 @@ using System.Configuration;
 
 namespace Sitecore.Support.Forms.Mvc.ViewModels.Fields
 {
-  public class RecaptchaField : SingleLineTextField, IConfiguration, IValidatableObject
-  {
-    private readonly IAnalyticsTracker analyticsTracker;
+  public class RecaptchaField : Sitecore.Forms.Mvc.ViewModels.Fields.RecaptchaField, IConfiguration, IValidatableObject
+  {   
 
-    public RecaptchaField() : this(DependenciesManager.AnalyticsTracker)
-    {
-    }
-
-    public RecaptchaField(IAnalyticsTracker analyticsTracker)
-    {
-      this.analyticsTracker = analyticsTracker;
-
-      this.Theme = "light";
-      this.CaptchaType = "image";
-    }
-
-    [NotNull]
-    public string Theme { get; set; }
-
-    [NotNull]
-    public string CaptchaType { get; set; }
-
-    [NotNull]
-    public string SiteKey { get; set; }
-
-    [NotNull]
-    public string SecretKey { get; set; }
-
-    [CanBeNull]
-    [TypeConverter(typeof(ProtectionSchemaAdapter))]
-    public virtual ProtectionSchema RobotDetection { get; set; }
-
-    public virtual bool IsRobot
-    {
-      get
-      {
-        return this.analyticsTracker.IsRobot;
-      }
-    }
-
-    [CanBeNull]
-    [RequestFormValue("g-recaptcha-response")]
-    [RecaptchaResponseValidator(ParameterName = "RecaptchaValidatorError")]
-    public override string Value { get; set; }
-
-    public override ControlResult GetResult()
-    {
-      return new ControlResult(this.FieldItemId, this.Title, this.Value, null, true);
-    }
-
-    public override void Initialize()
-    {
-      this.SiteKey = this.GetAppSetting("RecaptchaPublicKey") ?? this.GetSitecoreSetting("WFM.RecaptchaSiteKey", null);
-      this.SecretKey = this.GetAppSetting("RecaptchaPrivateKey") ?? this.GetSitecoreSetting("WFM.RecaptchaSecretKey", null);
-      this.Visible = !(this.RobotDetection != null && this.RobotDetection.Enabled);
-    }
-
-    public override void SetValueFromQuery(string valueFromQuery)
-    {
-    }
-
-    public virtual string GetAppSetting(string key)
-    {
-      Assert.ArgumentNotNullOrEmpty(key, "key");
-      return ConfigurationManager.AppSettings[key];
-    }
-
-    public virtual string GetSitecoreSetting(string key, string defaultValue)
-    {
-      Assert.ArgumentNotNullOrEmpty(key, "key");
-      return Settings.GetSetting(key, defaultValue);
-    }
-
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    public new IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
       if (this.Visible || this.RobotDetection == null || !this.RobotDetection.Enabled)
       {
